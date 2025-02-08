@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import NavbarCategoryDropdown from './NavbarCategoryDropdown';
+import CategoriesList from './CategoriesList';
 
 const Navbar: React.FC = () => {
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState<boolean>(false);
@@ -12,7 +13,7 @@ const Navbar: React.FC = () => {
 
   // Toggle theme dropdown visibility
   const handleThemeDropdownToggle = (): void => {
-    setIsCategoriesDropdownOpen(false); // Close categories dropdown
+    setIsCategoriesDropdownOpen(false);  
     setIsThemeDropdownOpen((prevState) => !prevState);
   };
 
@@ -20,7 +21,7 @@ const Navbar: React.FC = () => {
   const handleThemeChange = (newTheme: 'light' | 'dark'): void => {
     setTheme(newTheme);
     document.body.setAttribute('data-bs-theme', newTheme);
-    setIsThemeDropdownOpen(false); // Close the dropdown
+    setIsThemeDropdownOpen(false);  
   };
 
   // Close categories dropdown
@@ -30,11 +31,12 @@ const Navbar: React.FC = () => {
 
   // Toggle categories dropdown visibility
   const handleCategoriesDropdownToggle = (): void => {
-    setIsThemeDropdownOpen(false); // Close theme dropdown
+    setIsThemeDropdownOpen(false);  
     setIsCategoriesDropdownOpen((prevState) => !prevState);
   };
 
   return (
+    <>
     <header className="navbar navbar-expand navbar-sticky sticky-top bg-body z-fixed py-1 py-lg-0 py-xl-1 px-0">
       <div className="container justify-content-start py-2 py-lg-3">
         {/* Categories Dropdown */}
@@ -208,6 +210,8 @@ const Navbar: React.FC = () => {
         </div>
       </div>
     </header>
+    <CategoriesList/>
+    </>
   );
 };
 

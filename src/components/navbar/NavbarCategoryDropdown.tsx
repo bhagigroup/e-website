@@ -1,4 +1,11 @@
-import React from 'react';
+import React,{useState,useEffect} from 'react';
+import { categoryServices } from '../services/categoryServices';
+
+interface Category {
+  id: string;
+  name: string;
+  subcategories: { id: string; name: string }[];
+}
 
 interface NavbarCategoryDropdownProps {
   closeDropdown: () => void;
@@ -11,8 +18,34 @@ const NavbarCategoryDropdown: React.FC<NavbarCategoryDropdownProps> = ({
   isCategoriesDropdownOpen,
   handleCategoriesDropdownToggle,
 }) => {
+
+  const [categories, setCategories] = useState<Category[]>([]);
+ 
+  useEffect(() => {
+    if (isCategoriesDropdownOpen) {
+      const fetchCategories = async () => {
+        const data = await categoryServices.fetchAllCategories();
+        if (Array.isArray(data)) {
+          setCategories(data);
+        }
+      };
+
+      fetchCategories();
+    }
+  }, [isCategoriesDropdownOpen]);
+
+
+
+  // Split categories into rows of 4
+  const chunkedCategories = [];
+  for (let i = 0; i < categories.length; i += 4) {
+    chunkedCategories.push(categories.slice(i, i + 4));
+  }
+
   return (
+    <>
     <div className="dropdown d-none d-lg-block w-100 me-4" style={{ maxWidth: '200px' }}>
+      
       <button
         type="button"
         className="btn btn-lg btn-secondary w-100 border-0 rounded-pill"
@@ -23,197 +56,38 @@ const NavbarCategoryDropdown: React.FC<NavbarCategoryDropdownProps> = ({
         <i className="ci-chevron-down fs-lg me-2 ms-auto me-n1"></i>
       </button>
 
-      {isCategoriesDropdownOpen && (
+       
+
+{isCategoriesDropdownOpen && (
         <ul className="dropdown-menu rounded-4 p-4" style={{ display: 'block' }}>
-          <div className="d-flex gap-4">
-            <div style={{ minWidth: '170px' }}>
-              <div className="h6">Bakery &amp; bread</div>
-              <ul className="nav flex-column gap-2 mt-n2">
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Shop all
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Bread
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Pastries
-                  </a>
-                </li>
-              </ul>
-              <div className="h6 pt-4">Meat products</div>
-              <ul className="nav flex-column gap-2 mt-n2">
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Poultry products
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Prepared meat
-                  </a>
-                </li>
-              </ul>
+          {chunkedCategories.map((row, rowIndex) => (
+            <div key={rowIndex} className="d-flex gap-4 mb-3">
+              {row.map((category) => (
+                <div key={category.id} style={{ minWidth: '170px' }}>
+                  <div className="h6">{category.name}</div>
+
+                  <ul className="nav flex-column gap-2 mt-n2">
+                  {category.subcategories.length > 0 ? (
+                    category.subcategories.map((sub) => (
+                      <li key={sub.id} className="d-flex w-100 pt-1">
+                        <a className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0">
+                          {sub.name}
+                        </a>
+                      </li>
+                    ))
+                  ):(
+                      <li className="text-muted">No subcategories</li>
+                  )
+                    }
+                  </ul>
+                </div>
+              ))}
             </div>
-            <div style={{ minWidth: '170px' }}>
-              <div className="h6">Vegetables</div>
-              <ul className="nav flex-column gap-2 mt-n2">
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Seasonal squashes
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Beans, peas &amp; lentils
-                  </a>
-                </li>
-              </ul>
-              <div className="h6 pt-4">Sauces and ketchup</div>
-              <ul className="nav flex-column gap-2 mt-n2">
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Shop all
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Tomato-based sauces
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div style={{ minWidth: '170px' }}>
-              <div className="h6">Fresh fruits</div>
-              <ul className="nav flex-column gap-2 mt-n2">
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Stone fruits
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Exotic fruits
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Melons
-                  </a>
-                </li>
-              </ul>
-              <div className="h6 pt-4">Italian dinner</div>
-              <ul className="nav flex-column gap-2 mt-n2">
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Italian meats
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Desserts &amp; beverages
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div style={{ minWidth: '170px' }}>
-              <div className="h6">Beverages</div>
-              <ul className="nav flex-column gap-2 mt-n2">
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Sports &amp; energy drinks
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Tea and coffee
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Alcoholic beverages
-                  </a>
-                </li>
-              </ul>
-              <div className="h6 pt-4">Dairy &amp; eggs</div>
-              <ul className="nav flex-column gap-2 mt-n2">
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Shop all
-                  </a>
-                </li>
-                <li className="d-flex w-100 pt-1">
-                  <a
-                    className="nav-link animate-underline animate-target d-inline fw-normal text-truncate p-0"
-                    href="shop-catalog-grocery.html"
-                  >
-                    Cheese
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
+          ))}
         </ul>
       )}
     </div>
+    </>
   );
 };
 

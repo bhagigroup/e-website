@@ -4,7 +4,7 @@ import Login from './components/Login';
 import Navbar from './components/navbar/Navbar';
 import Banner from './components/banner/Banner';
 import FeaturedCategories from './components/banner/FeaturedCategories';
-import CategoryList from './components/banner/CategoryList';
+import CategoryProducts from './components/products/CategoryProducts';
 // import LifestyleShop from './components/banner/LifestyleShop';
 
 const App = () => {
@@ -14,7 +14,7 @@ const App = () => {
      <Navbar/>
      <Banner/>
      <FeaturedCategories/>
-     <CategoryList/>
+     <CategoryProducts/>
      {/* <LifestyleShop/> */}
     </>
    
