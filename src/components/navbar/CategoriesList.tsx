@@ -4,7 +4,9 @@ import axios from "axios";
 interface Category {
   id: string;
   name: string;
-  image: string | null;
+  image: {
+    fileUrl: string;
+  } | null;
 }
 
 const CategoriesList: React.FC = () => {
@@ -13,7 +15,9 @@ const CategoriesList: React.FC = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://49.207.5.51:9002/cms/api/v1/product/get-categories");
+        const response = await axios.get(
+          "http://49.207.5.51:9002/cms/api/v1/product/get-categories"
+        );
         setCategories(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -30,16 +34,27 @@ const CategoriesList: React.FC = () => {
           <div className="overflow-auto" data-simplebar>
             <div className="nav flex-nowrap justify-content-between gap-4 py-2">
               {categories.map((category) => (
-                <div key={category.id} className="category-item d-flex align-items-center gap-2">
-                  <img 
-                    src={category.image || "https://via.placeholder.com/100"} 
-                    // alt={category.name} 
-                    className="category-image"
-                    width={50} 
-                    height={50} 
-                  />
-                  <span>{category.name}</span>
-                </div>
+                <a
+                  key={category.id}
+                  className="nav-link align-items-center animate-underline gap-2 p-0 d-flex"
+                  href="#"
+                >
+                  <span
+                    className="d-flex align-items-center justify-content-center bg-body-tertiary rounded-circle"
+                    style={{ width: "40px", height: "40px" }}
+                  >
+                    <img
+                      // src={category.image?.fileUrl || "/default-image.jpg"}
+                      src={category.image?.fileUrl}
+                      width="30"
+                      alt={category.name}
+                      className="rounded-circle"
+                    />
+                  </span>
+                  <span className="d-block animate-target fw-semibold text-nowrap ms-1">
+                    {category.name}
+                  </span>
+                </a>
               ))}
             </div>
           </div>

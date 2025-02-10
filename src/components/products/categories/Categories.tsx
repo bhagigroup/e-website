@@ -1,166 +1,64 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+interface Category {
+  id: string;
+  name: string;
+  image: {
+    fileUrl: string;
+  } | null;
+}
 
 const Categories: React.FC = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "http://49.207.5.51:9002/cms/api/v1/product/get-categories"
+        );
+        setCategories(response.data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
   return (
-    <section  >
-      <div  >
+    <section>
+      <div>
         {/* Categories List */}
-       
-        <div  >
+
+        <div>
           <h2 className="h3 border-bottom pb-3 pb-md-4 mb-4">Categories</h2>
           <div className="row nav g-3 g-sm-4">
-
-
-            <div className="col-sm-6 col-md-4 col-lg-12 d-flex">
-              <div className="position-relative d-flex min-w-0 align-items-center">
-                <div
-                  className="d-flex flex-shrink-0 align-items-center justify-content-center bg-body-tertiary rounded-circle"
-                  style={{ width: "56px", height: "56px" }}
+            {categories.map((category) => (
+              <a
+                key={category.id}
+                className="nav-link align-items-center animate-underline gap-2 p-0 d-flex"
+                href="#"
+              >
+                <span
+                  className="d-flex align-items-center justify-content-center bg-body-tertiary rounded-circle"
+                  style={{ width: "40px", height: "40px" }}
                 >
                   <img
-                    src="assets/img/shop/grocery/categories/01.png"
-                    width="40"
-                    alt="Category"
+                    // src={category.image?.fileUrl || "/default-image.jpg"}
+                    src={category.image?.fileUrl}
+                    width="30"
+                    alt={category.name}
+                    className="rounded-circle"
                   />
-                </div>
-                <div className="min-w-0 ps-3">
-                  <a
-                    className="nav-link animate-underline stretched-link fs-base fw-semibold p-0 mb-1"
-                    href="shop-catalog-grocery.html"
-                  >
-                    <span className="animate-target text-truncate">
-                      Bakery & bread
-                    </span>
-                  </a>
-                  <div className="fs-xs fw-normal text-body-secondary">
-                    230 products
-                  </div>
-                </div>
-              </div>
-            </div>
-                <div className="col-sm-6 col-md-4 col-lg-12 d-flex">
-                <div className="position-relative d-flex min-w-0 align-items-center">
-                <div
-                  className="d-flex flex-shrink-0 align-items-center justify-content-center bg-body-tertiary rounded-circle"
-                  style={{ width: "56px", height: "56px" }}
-                >
-                   
-                    <img src="assets/img/shop/grocery/categories/02.png" width="40" alt="Image"/>
-                  </div>
-                  <div className="min-w-0 ps-3">
-                    <a className="nav-link animate-underline stretched-link fs-base fw-semibold p-0 mb-1" href="shop-catalog-grocery.html">
-                      <span className="animate-target text-truncate">Vegetables</span>
-                    </a>
-                    <div className="fs-xs fw-normal text-body-secondary">180 products</div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-sm-6 col-md-4 col-lg-12 d-flex">
-                <div className="position-relative d-flex min-w-0 align-items-center">
-                <div
-                  className="d-flex flex-shrink-0 align-items-center justify-content-center bg-body-tertiary rounded-circle"
-                  style={{ width: "56px", height: "56px" }}
-                >
-                    <img src="assets/img/shop/grocery/categories/03.png" width="40" alt="Image"/>
-                   
-                  </div>
-                  <div className="min-w-0 ps-3">
-                    <a className="nav-link animate-underline stretched-link fs-base fw-semibold p-0 mb-1" href="shop-catalog-grocery.html">
-                    <span className="animate-target text-truncate">Fresh fruits</span>
-                    </a>
-                    <div className="fs-xs fw-normal text-body-secondary">205 products</div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-sm-6 col-md-4 col-lg-12 d-flex">
-                <div className="position-relative d-flex min-w-0 align-items-center">
-                <div
-                  className="d-flex flex-shrink-0 align-items-center justify-content-center bg-body-tertiary rounded-circle"
-                  style={{ width: "56px", height: "56px" }}
-                >
-                    <img src="assets/img/shop/grocery/categories/04.png" width="40" alt="Image"/>
-                   
-                  </div>
-                  <div className="min-w-0 ps-3">
-                    <a className="nav-link animate-underline stretched-link fs-base fw-semibold p-0 mb-1" href="shop-catalog-grocery.html">
-                    <span className="animate-target text-truncate">Meet Italian dinner</span>
-                    </a>
-                    <div className="fs-xs fw-normal text-body-secondary">309 products</div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-sm-6 col-md-4 col-lg-12 d-flex">
-                <div className="position-relative d-flex min-w-0 align-items-center">
-                <div
-                  className="d-flex flex-shrink-0 align-items-center justify-content-center bg-body-tertiary rounded-circle"
-                  style={{ width: "56px", height: "56px" }}
-                >
-                    <img src="assets/img/shop/grocery/categories/05.png" width="40" alt="Image"/>
-                   
-                  </div>
-                  <div className="min-w-0 ps-3">
-                    <a className="nav-link animate-underline stretched-link fs-base fw-semibold p-0 mb-1" href="shop-catalog-grocery.html">
-                    <span className="animate-target text-truncate">Beverages</span>
-                    </a>
-                    <div className="fs-xs fw-normal text-body-secondary">372 products</div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-sm-6 col-md-4 col-lg-12 d-flex">
-                <div className="position-relative d-flex min-w-0 align-items-center">
-                <div
-                  className="d-flex flex-shrink-0 align-items-center justify-content-center bg-body-tertiary rounded-circle"
-                  style={{ width: "56px", height: "56px" }}
-                >
-                    <img src="assets/img/shop/grocery/categories/06.png" width="40" alt="Image"/>
-                   
-                  </div>
-                  <div className="min-w-0 ps-3">
-                    <a className="nav-link animate-underline stretched-link fs-base fw-semibold p-0 mb-1" href="shop-catalog-grocery.html">
-                    <span className="animate-target text-truncate">Meat products</span>
-                    </a>
-                    <div className="fs-xs fw-normal text-body-secondary">124 products</div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-sm-6 col-md-4 col-lg-12 d-flex">
-                <div className="position-relative d-flex min-w-0 align-items-center">
-                <div
-                  className="d-flex flex-shrink-0 align-items-center justify-content-center bg-body-tertiary rounded-circle"
-                  style={{ width: "56px", height: "56px" }}
-                >
-                    <img src="assets/img/shop/grocery/categories/07.png" width="40" alt="Image"/>
-                   
-                  </div>
-                  <div className="min-w-0 ps-3">
-                    <a className="nav-link animate-underline stretched-link fs-base fw-semibold p-0 mb-1" href="shop-catalog-grocery.html">
-                    <span className="animate-target text-truncate">Sauces and ketchup</span>
-                    </a>
-                    <div className="fs-xs fw-normal text-body-secondary">219 products</div>
-                  </div>
-                </div>
-              </div>
-              <div className="col-sm-6 col-md-4 col-lg-12 d-flex">
-                <div className="position-relative d-flex min-w-0 align-items-center">
-                <div
-                  className="d-flex flex-shrink-0 align-items-center justify-content-center bg-body-tertiary rounded-circle"
-                  style={{ width: "56px", height: "56px" }}
-                >
-                    <img src="assets/img/shop/grocery/categories/08.png" width="40" alt="Image"/>
-                   
-                  </div>
-                  <div className="min-w-0 ps-3">
-                    <a className="nav-link animate-underline stretched-link fs-base fw-semibold p-0 mb-1" href="shop-catalog-grocery.html">
-                    <span className="animate-target text-truncate">Dairy and eggs</span>
-                    </a>
-                    <div className="fs-xs fw-normal text-body-secondary">146 products</div>
-                  </div>
-                </div>
-              </div>
+                </span>
+                <span className="d-block animate-target fw-semibold text-nowrap ms-1">
+                  {category.name}
+                </span>
+              </a>
+            ))}
           </div>
         </div>
-
-        
       </div>
     </section>
   );
