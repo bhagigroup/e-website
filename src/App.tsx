@@ -1,23 +1,25 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login';
-import Navbar from './components/navbar/Navbar';
-import Banner from './components/banner/Banner';
-import FeaturedCategories from './components/banner/FeaturedCategories';
-import CategoryProducts from './components/products/CategoryProducts';
-// import LifestyleShop from './components/banner/LifestyleShop';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-const App = () => {
+import Navbar from "./components/navbar/Navbar";
+import Banner from "./components/banner/Banner";
+import FeaturedCategories from "./components/banner/FeaturedCategories";
+import CategoryProducts from "./components/products/CategoryProducts";
+import LifeStyleProducts from "./components/productsRecipes/LifeStyleProducts";
+import SpecialProducts from "./components/productsRecipes/SpecialProducts";
+import Home from "./components/Home";
+
+const App: React.FC = () => {
   return (
-    // <Login/>
     <>
-     <Navbar/>
-     <Banner/>
-     <FeaturedCategories/>
-     <CategoryProducts/>
-     {/* <LifestyleShop/> */}
+      {/* <Navbar />
+      <Banner />
+      <FeaturedCategories />
+      <CategoryProducts />
+      <LifeStyleProducts />
+      <SpecialProducts /> */}
+      <Home />
     </>
-   
   );
 };
 

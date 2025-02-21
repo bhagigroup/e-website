@@ -8,12 +8,12 @@ const CategoryProducts: React.FC = () => {
       <div className="row">
         {/* Categories List */}
         <div className="col-lg-3 pb-2 pb-sm-3 pb-md-4 mb-5 mb-lg-0">
-           <Categories/>
+          <Categories />
         </div>
 
         {/* Popular Products */}
         <div className="col-lg-9">
-           <PopularProducts/>
+          <PopularProducts />
         </div>
       </div>
     </section>

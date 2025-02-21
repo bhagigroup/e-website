@@ -16,7 +16,7 @@ const Categories: React.FC = () => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          "http://49.207.5.51:9002/cms/api/v1/product/get-categories"
+          "http://49.207.5.51:7000/cms/api/v1/product/get-categories"
         );
         setCategories(response.data);
       } catch (error) {
