@@ -1,76 +1,65 @@
-import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
-import ReactPaginate from "react-paginate";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { NavbarServices } from "../services/navbarServices";
-
-interface Attachment {
-  id: string;
-  fileUrl: string;
-  fileName: string;
-}
+import { NavbarServices } from "../../services/navbarServices";
 
 interface Product {
   id: string;
   Name: string;
+  price: string;
   Size: string;
-  price: number;
-  categoryId: string;
-  subCategoryId: string;
-  attachments: Attachment[];
+  Price: number;
+  attachments: { fileUrl: string }[];
 }
 
-const ProductsList: React.FC = () => {
+interface ProductDisplayProps {
+  categoryId?: string;
+  subCategoryId?: string;
+}
+
+const ProductDisplay: React.FC<ProductDisplayProps> = ({
+  categoryId,
+  subCategoryId,
+}) => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState<number>(0);
   const navigate = useNavigate();
 
-  // Set to 2 for testing pagination display
-  const productsPerPage = 2;
-
-  const location = useLocation();
-  const categoryId = location.state?.categoryId;
-
   useEffect(() => {
+    if (!categoryId) {
+      return;
+    }
     const fetchProducts = async () => {
-      try {
-        let data;
-        if (categoryId) {
-          data = await NavbarServices.getProductsByFilter(categoryId);
-        } else {
-          data = await NavbarServices.getAllProducts();
-        }
+      setLoading(true);
+      setError(null);
 
-        if (Array.isArray(data)) {
-          setProducts(data);
-        } else {
-          setError("Invalid response format.");
-        }
+      try {
+        const productsData = await NavbarServices.fetchProducts(
+          categoryId,
+          subCategoryId
+        );
+        setProducts(productsData);
       } catch (err) {
-        setError("Failed to fetch products.");
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [categoryId]);
+  }, [categoryId, subCategoryId]);
 
-  const offset = currentPage * productsPerPage;
-  const currentProducts = products.slice(offset, offset + productsPerPage);
-  const pageCount = Math.ceil(products.length / productsPerPage);
-
-  const handlePageClick = (selectedItem: { selected: number }) => {
-    setCurrentPage(selectedItem.selected);
-  };
   const handleProductClick = (productId: string) => {
     // Navigate to the detail page based on product id
     navigate(`/product/${productId}`);
   };
   return (
-    <>
+    <div>
       <div className="d-sm-flex align-items-center justify-content-between mb-4">
         <div className="fs-sm text-body-emphasis text-nowrap mb-2 mb-sm-0">
           Found <span className="fw-semibold">{products.length}</span> items
@@ -100,16 +89,16 @@ const ProductsList: React.FC = () => {
       {error && <p className="text-danger">{error}</p>}
 
       <div className="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-3 row-cols-xl-4 g-4">
-        {currentProducts.length > 0
-          ? currentProducts.map((product) => (
+        {products.length > 0
+          ? products.map((product) => (
               <div key={product.id} className="col-md-4 mb-4">
-                <div className="card product-card h-100 bg-transparent border-0 shadow-none">
+                <div
+                  className="card product-card h-100 
+                bg-transparent border-0 shadow-none"
+                  onClick={() => handleProductClick(product.id)}
+                >
                   <div className="position-relative z-2">
-                    <a
-                      className="d-block p-2 p-lg-3"
-                      onClick={() => handleProductClick(product.id)}
-                      style={{ cursor: "pointer" }}
-                    >
+                    <a className="d-block p-2 p-lg-3">
                       <div
                         className="ratio"
                         style={{ paddingBottom: "calc(160 / 191 * 100%)" }}
@@ -121,7 +110,6 @@ const ProductsList: React.FC = () => {
                               ? product.attachments[0].fileUrl
                               : "/default-product.jpg"
                           }
-                          alt={product.Name}
                         />
                       </div>
                     </a>
@@ -137,12 +125,12 @@ const ProductsList: React.FC = () => {
                       </a>
                     </h3>
                   </div>
+
                   <div className="d-flex gap-2">
                     <button
                       type="button"
                       className="btn btn-primary w-100 rounded-pill
                    px-3"
-                      onClick={() => handleProductClick(product.id)}
                     >
                       View variants
                     </button>
@@ -159,33 +147,8 @@ const ProductsList: React.FC = () => {
             ))
           : !loading && <p className="text-center">No products available.</p>}
       </div>
-
-      {/* Pagination Controls */}
-      {products.length > 0 && (
-        <div className="d-flex justify-content-center mt-4">
-          <ReactPaginate
-            previousLabel={"previous"}
-            nextLabel={"next"}
-            breakLabel={"..."}
-            pageCount={pageCount}
-            marginPagesDisplayed={2}
-            pageRangeDisplayed={3}
-            onPageChange={handlePageClick}
-            containerClassName={"pagination"}
-            pageClassName={"page-item"}
-            pageLinkClassName={"page-link"}
-            previousClassName={"page-item"}
-            previousLinkClassName={"page-link"}
-            nextClassName={"page-item"}
-            nextLinkClassName={"page-link"}
-            breakClassName={"page-item"}
-            breakLinkClassName={"page-link"}
-            activeClassName={"active"}
-          />
-        </div>
-      )}
-    </>
+    </div>
   );
 };
 
-export default ProductsList;
+export default ProductDisplay;

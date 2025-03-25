@@ -138,3 +138,155 @@ const LifeStyleProducts: React.FC = () => {
 };
 
 export default LifeStyleProducts;
+
+// import React, { useState } from "react";
+// import { Link } from "react-router-dom";
+// import axios from "axios";
+
+// const LifeStyleProducts: React.FC = () => {
+//   const [email, setEmail] = useState<string>("");
+//   const [password, setPassword] = useState<string>("");
+//   const [rememberMe, setRememberMe] = useState<boolean>(false);
+//   const [error, setError] = useState<string>("");
+
+//   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     setEmail(event.target.value);
+//   };
+
+//   const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     setPassword(event.target.value);
+//   };
+
+//   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+//     event.preventDefault();
+//     setError("");
+
+//     try {
+//       const response = await axios.post(
+//         "http://49.207.5.51:7001/cms/api/v1/order/login",
+//         {
+//           username: email,
+//           password: password,
+//         },
+//         {
+//           headers: { "Content-Type": "application/json" },
+//         }
+//       );
+
+//       console.log("Login Response:", response.data);
+
+//       if (response.data.success) {
+//         console.log("Login Success:", response.data);
+//         // Handle successful login (e.g., store token, redirect)
+//       } else {
+//         setError(response.data.message || "Invalid email or password");
+//       }
+//     } catch (err: any) {
+//       console.error(
+//         "Login Failed:",
+//         err.response ? err.response.data : err.message
+//       );
+//       setError(err.response?.data?.message || "Invalid email or password");
+//     }
+//   };
+
+//   return (
+//     <main
+//       className="content-wrapper w-100 px-3 ps-lg-5 pe-lg-4 mx-auto"
+//       style={{ maxWidth: "1920px" }}
+//     >
+//       <div className="d-lg-flex">
+//         {/* Login form */}
+//         <div
+//           className="d-flex flex-column min-vh-100 w-100 py-4 mx-auto me-lg-5"
+//           style={{ maxWidth: "416px" }}
+//         >
+//           <header className="navbar px-0 pb-4 mt-n2 mt-sm-0 mb-2 mb-md-3 mb-lg-4">
+//             <Link to="/" className="navbar-brand pt-0">
+//               <span className="d-flex flex-shrink-0 text-primary me-2">
+//                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36">
+//                   <path
+//                     d="M36 18.01c0 8.097-5.355 14.949-12.705 17.2a18.12 18.12 0 0 1-5.315.79C9.622 36 2.608 30.313.573 22.611.257 21.407.059 20.162 0 18.879v-1.758c.02-.395.059-.79.099-1.185.099-.908.277-1.817.514-2.686C2.687 5.628 9.682 0 18 0c5.572 0 10.551 2.528 13.871 6.517 1.502 1.797 2.648 3.91 3.359 6.201.494 1.659.771 3.436.771 5.292z"
+//                     fill="currentColor"
+//                   />
+//                 </svg>
+//               </span>
+//               Cartzilla
+//             </Link>
+//           </header>
+
+//           <h1 className="h2 mt-auto">Welcome back</h1>
+//           <div className="nav fs-sm mb-4">
+//             Don't have an account?
+//             <Link
+//               to="/signup"
+//               className="nav-link text-decoration-underline p-0 ms-2"
+//             >
+//               Create an account
+//             </Link>
+//           </div>
+
+//           {error && <p className="text-danger">{error}</p>}
+
+//           <form className="needs-validation" onSubmit={handleSubmit} noValidate>
+//             <div className="position-relative mb-4">
+//               <input
+//                 type="email"
+//                 className="form-control form-control-lg"
+//                 placeholder="Email"
+//                 required
+//                 value={email}
+//                 onChange={handleEmailChange}
+//               />
+//             </div>
+//             <div className="mb-4">
+//               <input
+//                 type="password"
+//                 className="form-control form-control-lg"
+//                 placeholder="Password"
+//                 required
+//                 value={password}
+//                 onChange={handlePasswordChange}
+//               />
+//             </div>
+//             <div className="d-flex align-items-center justify-content-between mb-4">
+//               <div className="form-check me-2">
+//                 <input
+//                   type="checkbox"
+//                   className="form-check-input"
+//                   id="remember"
+//                   checked={rememberMe}
+//                   onChange={(e) => setRememberMe(e.target.checked)}
+//                 />
+//                 <label htmlFor="remember" className="form-check-label">
+//                   Remember for 30 days
+//                 </label>
+//               </div>
+//               <Link to="/password-recovery" className="nav-link p-0">
+//                 Forgot password?
+//               </Link>
+//             </div>
+//             <button type="submit" className="btn btn-lg btn-primary w-100">
+//               Sign In
+//             </button>
+//           </form>
+
+//           <footer className="mt-auto">
+//             <p className="fs-xs mb-0">
+//               &copy; All rights reserved. Made by{" "}
+//               <a
+//                 href="https://createx.studio/"
+//                 target="_blank"
+//                 rel="noopener noreferrer"
+//               >
+//                 Createx Studio
+//               </a>
+//             </p>
+//           </footer>
+//         </div>
+//       </div>
+//     </main>
+//   );
+// };
+
+// export default LifeStyleProducts;

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-
+import { ProductServices } from "../../services/ProductServices";
 interface Category {
   id: string;
   name: string;
@@ -14,18 +13,14 @@ const Categories: React.FC = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const response = await axios.get(
-          "http://49.207.5.51:7000/cms/api/v1/product/get-categories"
-        );
-        setCategories(response.data);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
+      const data = await ProductServices.getProductCategories();
+      if (Array.isArray(data)) {
+        setCategories(data);
       }
     };
-
     fetchCategories();
   }, []);
+
   return (
     <section>
       <div>

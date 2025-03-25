@@ -1,16 +1,44 @@
-import React, { useState, useEffect } from "react";
-import NavbarCategoryDropdown from "./NavbarCategoryDropdown";
+import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { NavbarServices } from "../services/navbarServices";
+import NavbarCategoryDropdown from "./navbarDropdown/NavbarCategoryDropdown";
 import CategoriesList from "./CategoriesList";
 
 const Navbar: React.FC = () => {
+  const navigate = useNavigate();
+
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] =
     useState<boolean>(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [isCategoriesDropdownOpen, setIsCategoriesDropdownOpen] =
     useState<boolean>(false);
 
+  const themeDropdownRef = useRef<HTMLDivElement>(null);
+  const userId = "67b9c5f1e4b3771fff37bfdd";
+
+  // Handle cart click
+  const handleCartClick = async () => {
+    const cartData = await NavbarServices.getCartDetails(userId);
+    navigate("/cart", { state: { cartData } });
+  };
+  // Close theme dropdown if clicked outside
   useEffect(() => {
-    console.log("Theme Dropdown state changed:", isThemeDropdownOpen);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        themeDropdownRef.current &&
+        !themeDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsThemeDropdownOpen(false);
+      }
+    };
+
+    if (isThemeDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [isThemeDropdownOpen]);
 
   // Toggle theme dropdown visibility
@@ -39,8 +67,12 @@ const Navbar: React.FC = () => {
 
   return (
     <>
-      <header className="navbar navbar-expand navbar-sticky sticky-top bg-body z-fixed py-1 py-lg-0 py-xl-1 px-0">
-        <div className="container justify-content-start py-2 py-lg-3">
+      <header
+        className="navbar navbar-expand navbar-sticky sticky-top 
+      bg-body z-fixed   shadow"
+        style={{ zIndex: 1050, top: 0 }}
+      >
+        <div className="container justify-content-start py-2">
           {/* Categories Dropdown */}
           <button
             type="button"
@@ -53,36 +85,15 @@ const Navbar: React.FC = () => {
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          <a
-            className="navbar-brand fs-2 p-0 pe-lg-2 pe-xxl-0 me-0 me-sm-3 me-md-4 me-xxl-5"
-            href="index.html"
-          >
+          <a className="navbar-brand fs-2 p-0 me-4" href="/">
             Cartzilla
           </a>
-
           <NavbarCategoryDropdown
             closeDropdown={closeCategoriesDropdown}
             isCategoriesDropdownOpen={isCategoriesDropdownOpen}
             handleCategoriesDropdownToggle={handleCategoriesDropdownToggle}
           />
 
-          {/* Search 
-          bar */}
-          {/* <div className="position-relative w-100 d-none d-md-block me-3 me-xl-4">
-          <input
-            type="search"
-            className="form-control form-control-lg rounded-pill"
-            placeholder="Search for products"
-            aria-label="Search"
-          />
-          <button
-            type="button"
-            className="btn btn-icon btn-ghost fs-lg btn-secondary text-body border-0 position-absolute top-0 end-0 rounded-circle mt-1 me-1"
-            aria-label="Search button"
-          >
-            <i className="ci-search"></i>
-          </button>
-        </div> */}
           <div className="position-relative w-100 d-none d-md-block me-3 me-xl-4">
             <input
               type="search"
@@ -98,7 +109,6 @@ const Navbar: React.FC = () => {
               <i className="ci-search"></i>
             </button>
           </div>
-
           {/* Delivery section */}
           <div className="nav me-4 me-xxl-5 d-none d-xl-block">
             <a
@@ -118,7 +128,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Theme switcher */}
-          <div className="dropdown">
+          <div className="dropdown" ref={themeDropdownRef}>
             <button
               type="button"
               className="theme-switcher btn btn-icon btn-outline-secondary fs-lg border-0 rounded-circle animate-scale"
@@ -184,35 +194,22 @@ const Navbar: React.FC = () => {
             )}
           </div>
 
-          {/* Account and Cart buttons */}
           <div className="d-flex align-items-center gap-md-1 gap-lg-2 ms-auto">
-            <a
-              className="btn btn-icon fs-lg btn-outline-secondary border-0 rounded-circle animate-shake d-none d-md-inline-flex"
-              href="account-signin.html"
-            >
+            <a className="btn btn-icon fs-lg btn-outline-secondary border-0 rounded-circle animate-shake d-none d-md-inline-flex">
               <i className="ci-user animate-target"></i>
               <span className="visually-hidden">Account</span>
             </a>
 
             <button
               type="button"
-              className="btn btn-icon fs-xl btn-outline-secondary position-relative border-0 rounded-circle animate-scale"
+              className="btn btn-icon fs-xl
+               btn-outline-secondary position-relative border-0 rounded-circle animate-scale"
               data-bs-toggle="offcanvas"
               data-bs-target="#shoppingCart"
               aria-controls="shoppingCart"
               aria-label="Shopping cart"
+              onClick={handleCartClick}
             >
-              <span
-                className="position-absolute top-0 start-100 badge fs-xs text-bg-primary rounded-pill ms-n3 z-2"
-                style={
-                  {
-                    "--cz-badge-padding-y": ".25em",
-                    "--cz-badge-padding-x": ".42em",
-                  } as React.CSSProperties
-                }
-              >
-                8
-              </span>
               <i className="ci-shopping-cart animate-target"></i>
             </button>
           </div>

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./CategoriesCatalog.css"; // Import the custom CSS
+import { NavbarServices } from "../services/navbarServices";
 
-// Define interfaces for your API data
 interface SubCategory {
   id: string;
   name: string;
@@ -27,19 +25,17 @@ const CategoriesCatalog: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    axios
-      .get<Category[]>(
-        "http://49.207.5.51:7000/cms/api/v1/product/all-categories"
-      )
-      .then((response) => {
-        setCategories(response.data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Error fetching categories:", err);
+    const fetchCategories = async () => {
+      try {
+        const data = await NavbarServices.getAllCategories();
+        setCategories(data);
+      } catch (err) {
         setError("Error loading categories.");
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    fetchCategories();
   }, []);
 
   return (

@@ -1,6 +1,13 @@
 import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
+
 const Navbar = React.lazy(() => import("./navbar/Navbar"));
+const CategoriesProduct = React.lazy(
+  () => import("./navbar/navbarDropdown/CategoriesProduct")
+);
+const Cart = React.lazy(() => import("./navbar/Cart"));
+const Categories = React.lazy(() => import("./categoriesFIlter/Categories"));
+
 const Banner = React.lazy(() => import("./banner/Banner"));
 
 const FeaturedCategories = React.lazy(
@@ -12,7 +19,20 @@ const CategoryProducts = React.lazy(
 const LifeStyleProducts = React.lazy(
   () => import("./productsRecipes/LifeStyleProducts")
 );
-const Categories = React.lazy(() => import("./categoriesFIlter/Categories"));
+
+// const SpecialProducts = React.lazy(
+//   () => import("./productsRecipes/SpecialProducts")
+// );
+
+const RecipesSection = React.lazy(
+  () => import("./productsRecipes/RecipesSection")
+);
+
+const SingleProducts = React.lazy(
+  () => import("./products/productsdetails/SingleProducts")
+);
+const Footer = React.lazy(() => import("./footer/Footer"));
+
 const Routings: React.FC = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -27,12 +47,17 @@ const Routings: React.FC = () => {
               <FeaturedCategories />
               <CategoryProducts />
               <LifeStyleProducts />
+              <RecipesSection />
+              {/* <SpecialPr oducts /> */}
+              <Footer />
             </>
           }
         />
         <Route path="/productsfilter" element={<Categories />} />
-
+        <Route path="/product/:productId" element={<SingleProducts />} />
+        <Route path="/categories-filter" element={<CategoriesProduct />} />
         {/* <Route path="/products/:categoryId" element={<ProductsList />} /> */}
+        <Route path="/cart" element={<Cart />} />
       </Routes>
     </Suspense>
   );
