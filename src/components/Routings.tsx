@@ -6,6 +6,11 @@ const CategoriesProduct = React.lazy(
   () => import("./navbar/navbarDropdown/CategoriesProduct")
 );
 const Cart = React.lazy(() => import("./navbar/Cart"));
+
+const DeliveryOptions = React.lazy(() => import("./orders/DeliveryOptions"));
+
+const AccountOrders = React.lazy(() => import("./navbar/AccountOrders"));
+
 const Categories = React.lazy(() => import("./categoriesFIlter/Categories"));
 
 const Banner = React.lazy(() => import("./banner/Banner"));
@@ -58,6 +63,9 @@ const Routings: React.FC = () => {
         <Route path="/categories-filter" element={<CategoriesProduct />} />
         {/* <Route path="/products/:categoryId" element={<ProductsList />} /> */}
         <Route path="/cart" element={<Cart />} />
+        <Route path="/delivery-options" element={<DeliveryOptions />} />
+
+        <Route path="/account-orders" element={<AccountOrders />} />
       </Routes>
     </Suspense>
   );

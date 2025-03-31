@@ -21,6 +21,11 @@ const Navbar: React.FC = () => {
     const cartData = await NavbarServices.getCartDetails(userId);
     navigate("/cart", { state: { cartData } });
   };
+
+  // Handle cart click
+  const handleProfileClick = async () => {
+    navigate("/account-orders");
+  };
   // Close theme dropdown if clicked outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -195,7 +200,10 @@ const Navbar: React.FC = () => {
           </div>
 
           <div className="d-flex align-items-center gap-md-1 gap-lg-2 ms-auto">
-            <a className="btn btn-icon fs-lg btn-outline-secondary border-0 rounded-circle animate-shake d-none d-md-inline-flex">
+            <a
+              className="btn btn-icon fs-lg btn-outline-secondary border-0 rounded-circle animate-shake d-none d-md-inline-flex"
+              onClick={handleProfileClick}
+            >
               <i className="ci-user animate-target"></i>
               <span className="visually-hidden">Account</span>
             </a>

@@ -2,14 +2,29 @@ import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "./Navbar";
 import { Breadcrumbs } from "../common/Breadcrumbs";
+import axios from "axios";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 const Cart: React.FC = () => {
+  const navigate = useNavigate();
+
   const location = useLocation();
   const initialCartData = location.state?.cartData || null;
 
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [total, setTotal] = useState<number>(0);
   const [orderQuantity, setOrderQuantity] = useState<number>(0);
+
+  //handle proceed to checkout
+  const handleProceedToAddDeliveryOptions = () => {
+    navigate("/delivery-options");
+  };
 
   useEffect(() => {
     const updateCart = () => {
@@ -88,10 +103,39 @@ const Cart: React.FC = () => {
       <section className="container pb-5 mb-2 mb-md-3 mb-lg-4 mb-xl-5">
         <Breadcrumbs item1="Home" item2="Shop" item3="Cart" />
         <h1 className="h3 mb-4">Shopping cart</h1>
+
         <div className="row">
           {/* Items list */}
           <div className="col-lg-8">
             <div className="pe-lg-2 pe-xl-3 me-xl-3">
+              <p className="fs-sm">
+                Buy <span className="text-dark-emphasis fw-semibold">$183</span>{" "}
+                more to get{" "}
+                <span className="text-dark-emphasis fw-semibold">
+                  Free Shipping
+                </span>
+              </p>
+              <div
+                className="progress w-100 overflow-visible mb-4"
+                role="progressbar"
+                aria-label="Free shipping progress"
+                aria-valuenow={75}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                style={{ height: "4px" }}
+              >
+                <div
+                  className="progress-bar bg-warning rounded-pill position-relative overflow-visible"
+                  style={{ width: "75%", height: "4px" }}
+                >
+                  <div
+                    className="position-absolute top-50 end-0 d-flex align-items-center justify-content-center translate-middle-y bg-body border border-warning rounded-circle me-n1"
+                    style={{ width: "1.5rem", height: "1.5rem" }}
+                  >
+                    <i className="ci-star-filled text-warning"></i>
+                  </div>
+                </div>
+              </div>
               <table className="table position-relative z-2 mb-4">
                 <thead>
                   <tr>
@@ -207,8 +251,11 @@ const Cart: React.FC = () => {
                   <span className="fs-sm">Estimated total:</span>
                   <span className="h5 mb-0">₹{total.toFixed(2)}</span>
                 </div>
-                <button className="btn btn-lg btn-primary w-100">
-                  Proceed to checkout
+                <button
+                  className="btn btn-lg btn-primary w-100"
+                  onClick={handleProceedToAddDeliveryOptions}
+                >
+                  Proceed
                 </button>
               </div>
             </div>

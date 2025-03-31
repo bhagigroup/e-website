@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import ReactPaginate from "react-paginate";
 import { NavbarServices } from "../../services/navbarServices";
 
 interface Product {
@@ -24,7 +24,9 @@ const ProductDisplay: React.FC<ProductDisplayProps> = ({
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const navigate = useNavigate();
+  const productsPerPage = 10;
 
   useEffect(() => {
     if (!categoryId) {
@@ -53,6 +55,14 @@ const ProductDisplay: React.FC<ProductDisplayProps> = ({
 
     fetchProducts();
   }, [categoryId, subCategoryId]);
+
+  const offset = currentPage * productsPerPage;
+  const currentProducts = products.slice(offset, offset + productsPerPage);
+  const pageCount = Math.ceil(products.length / productsPerPage);
+
+  const handlePageClick = (selectedItem: { selected: number }) => {
+    setCurrentPage(selectedItem.selected);
+  };
 
   const handleProductClick = (productId: string) => {
     // Navigate to the detail page based on product id
@@ -147,6 +157,30 @@ const ProductDisplay: React.FC<ProductDisplayProps> = ({
             ))
           : !loading && <p className="text-center">No products available.</p>}
       </div>
+      {/* Pagination Controls */}
+      {products.length > 0 && (
+        <div className="d-flex justify-content-center mt-4">
+          <ReactPaginate
+            previousLabel={"previous"}
+            nextLabel={"next"}
+            breakLabel={"..."}
+            pageCount={pageCount}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={3}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"page-link"}
+            previousClassName={"page-item"}
+            previousLinkClassName={"page-link"}
+            nextClassName={"page-item"}
+            nextLinkClassName={"page-link"}
+            breakClassName={"page-item"}
+            breakLinkClassName={"page-link"}
+            activeClassName={"active"}
+          />
+        </div>
+      )}
     </div>
   );
 };

@@ -104,7 +104,7 @@ const NavbarCategoryDropdown: React.FC<NavbarCategoryDropdownProps> = ({
                   {" "}
                   {/* 4 columns per row */}
                   <div
-                    className="h6 cursor-pointer fw-bold"
+                    className="h6  cursor-pointer fw-bold"
                     onClick={() => handleCategoryClick(category)}
                   >
                     {category.name}

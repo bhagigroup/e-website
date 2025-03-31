@@ -28,7 +28,7 @@ const ProductsList: React.FC = () => {
   const navigate = useNavigate();
 
   // Set to 2 for testing pagination display
-  const productsPerPage = 2;
+  const productsPerPage = 10;
 
   const location = useLocation();
   const categoryId = location.state?.categoryId;

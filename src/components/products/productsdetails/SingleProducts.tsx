@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom"; // Import useNavigate
+import { useParams, useNavigate } from "react-router-dom";
 
 import Navbar from "../../navbar/Navbar";
 
@@ -29,7 +29,7 @@ export interface ProductDetailType {
 }
 
 const SingleProducts: React.FC = () => {
-  const navigate = useNavigate(); // Initialize navigate
+  const navigate = useNavigate();
 
   const { productId } = useParams<{ productId: string }>();
   const [product, setProduct] = useState<ProductDetailType | null>(null);
@@ -61,67 +61,6 @@ const SingleProducts: React.FC = () => {
     return <div>Loading...</div>;
   }
 
-  // const handleAddToCart = async () => {
-  //   if (!product || !selectedVariant) return;
-
-  //   const apiPayload = {
-  //     // productId: "67d11f6f1578226ac10cb234",
-  //     // variantId: "67d12262e5c49b02eb6d30bf",
-  //     productId: product.id,
-  //     variantId: selectedVariant.id,
-  //     quantity: 1,
-  //     userId: "67b9c5f1e4b3771fff37bfdd",
-  //     cartId: "",
-  //   };
-
-  //   try {
-  //     const response = await axios.post(
-  //       "http://49.207.5.51:7000/cms/api/v1/order/add-to-cart",
-  //       apiPayload,
-  //       { headers: { "Content-Type": "application/json" } }
-  //     );
-
-  //     if (response.status === 200) {
-  //       // const productName =
-  //       //   response.data.itemList?.find(
-  //       //     (item: any) => item.productId === product.id
-  //       //   )?.productName || "Unknown Product"; // Fallback name
-  //       const item = response.data.itemList?.find(
-  //         (item: any) => item.productId === product.id
-  //       );
-
-  //       const productName = item?.productName || "Unknown Product"; // Fallback name
-  //       const subTotal = item?.subTotal || selectedVariant.discountedPrice; // Fallback to price
-  //       const orderQuantity = item?.orderQuantity || 1;
-  //       const total = response.data.total || selectedVariant.discountedPrice;
-  //       let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-  //       cart.push({
-  //         productId: product.id,
-  //         variantId: selectedVariant.id,
-  //         // name: `Product ${product.id}`,
-  //         name: productName,
-  //         subTotal: subTotal,
-  //         orderQuantity: orderQuantity,
-  //         total: total,
-  //         price: selectedVariant.discountedPrice,
-  //         image:
-  //           product.attachments.length > 0
-  //             ? product.attachments[0].fileUrl
-  //             : "https://via.placeholder.com/150",
-  //       });
-  //       localStorage.setItem("cart", JSON.stringify(cart));
-  //       localStorage.setItem("total", JSON.stringify(total));
-  //       localStorage.setItem("orderQuantity", JSON.stringify(orderQuantity));
-
-  //       // Notify Navbar to update cart count
-  //       window.dispatchEvent(new Event("cartUpdated"));
-  //       navigate("/cart");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error adding to cart:", error);
-  //   }
-  // };
-
   const handleAddToCart = async () => {
     if (!product || !selectedVariant) return;
 
@@ -141,6 +80,13 @@ const SingleProducts: React.FC = () => {
       );
 
       if (response.status === 200) {
+        const cartData = response.data;
+        if (cartData.id) {
+          localStorage.setItem("cartId", cartData.id);
+        } else {
+          console.warn("Cart ID not found in response");
+        }
+
         const item = response.data.itemList?.find(
           (item: any) => item.productId === product.id
         );

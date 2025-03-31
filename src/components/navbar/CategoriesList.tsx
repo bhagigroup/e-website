@@ -68,7 +68,11 @@ const CategoriesList: React.FC = () => {
                       className="rounded-circle"
                     />
                   </span>
-                  <span className="d-block fw-semibold text-nowrap ms-1">
+                  <span
+                    className="hover-effect-underline fw-normal d-block
+                   fs-sm fw-medium text-truncate d-block fw-semibold text-nowrap ms-1"
+                    style={{ cursor: "pointer" }}
+                  >
                     {category.name}
                   </span>
                 </button>
