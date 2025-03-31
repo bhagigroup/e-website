@@ -23,4 +23,14 @@ export const ProductServices = {
       return null;
     }
   },
+
+  //get products details home page
+  getBanners: async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/product/get-banners`);
+      return response.data;
+    } catch (error) {
+      return null;
+    }
+  },
 };

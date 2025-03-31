@@ -1,13 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Swiper from "swiper";
 import { Autoplay, Pagination, EffectFade } from "swiper/modules";
+import { useNavigate } from "react-router-dom";
 // import Swiper and modules styles
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
+import { ProductServices } from "../services/ProductServices";
+interface Banner {
+  id: string;
+  name: string;
+  description: string;
+  categoryId: string;
+  image: {
+    fileUrl: string;
+  } | null;
+}
 
 const Banner: React.FC = () => {
+  const [banners, setBanners] = useState<Banner[]>([]);
+  //alert("Categories"+ JSON.stringify(categories))
+  const navigate = useNavigate();
   useEffect(() => {
     // Initialize Swiper
     new Swiper(".swiper", {
@@ -24,7 +38,21 @@ const Banner: React.FC = () => {
         disableOnInteraction: false,
       },
     });
+
+    const fetchCategories = async () => {
+          const data = await ProductServices.getBanners();
+          if (Array.isArray(data)) {
+            setBanners(data);
+          }
+        };
+    fetchCategories();
+
   }, []);
+
+  const handleCategoryClick = (categoryId: string) => {
+    alert("helloo...")
+    navigate("/productsfilter", { state: { categoryId } });
+  };
 
   return (
     <div>
@@ -33,7 +61,9 @@ const Banner: React.FC = () => {
           <div className="swiper position-absolute top-0 start-0 w-100 h-100">
             <div className="swiper-wrapper">
               {/* Slide 1 */}
+              {banners.map((category) => (
               <div
+                key={category.id}
                 className="swiper-slide"
                 style={{ backgroundColor: "#6dafca" }}
               >
@@ -47,7 +77,7 @@ const Banner: React.FC = () => {
                         <h2 className="display-4 pb-2 pb-md-3 pb-lg-4">
                           Healthy Food Available to Everyone
                         </h2>
-                        <a className="btn btn-lg btn-outline-light rounded-pill">
+                        <a className="btn btn-lg btn-outline-light rounded-pill" onClick={() => handleCategoryClick(category.categoryId)}>
                           Shop now
                         </a>
                       </div>
@@ -55,69 +85,13 @@ const Banner: React.FC = () => {
                   </div>
                 </div>
                 <img
-                  src="assets/img/home/grocery/hero-slider/01.jpg"
+                  src={category.image?.fileUrl}
                   className="position-absolute top-0 start-0 w-100 h-100 object-fit-cover rtl-flip"
                   alt="Healthy Food"
                 />
               </div>
+              ))}
 
-              {/* Slide 2 */}
-              <div
-                className="swiper-slide"
-                style={{ backgroundColor: "#5a7978" }}
-              >
-                <div className="position-absolute d-flex align-items-center w-100 h-100 z-2">
-                  <div className="container mt-lg-n4">
-                    <div className="row">
-                      <div className="col-12 col-sm-10 col-md-7 col-lg-6">
-                        <p className="fs-sm text-white mb-lg-4">
-                          🥚 Organic products to your table
-                        </p>
-                        <h2 className="display-4 pb-2 pb-md-3 pb-lg-4">
-                          Organic eggs from home-grown chicken
-                        </h2>
-                        <a className="btn btn-lg btn-outline-light rounded-pill">
-                          Shop now
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <img
-                  src="assets/img/home/grocery/hero-slider/02.jpg"
-                  className="position-absolute top-0 start-0 w-100 h-100 object-fit-cover rtl-flip"
-                  alt="Organic Eggs"
-                />
-              </div>
-
-              {/* Slide 3 */}
-              <div
-                className="swiper-slide"
-                style={{ backgroundColor: "#f99c03" }}
-              >
-                <div className="position-absolute d-flex align-items-center w-100 h-100 z-2">
-                  <div className="container mt-lg-n4">
-                    <div className="row">
-                      <div className="col-9 col-sm-8 col-md-7 col-lg-6">
-                        <p className="fs-sm text-white mb-lg-4">
-                          🥝 Only natural ingredients
-                        </p>
-                        <h2 className="display-4 pb-2 pb-md-3 pb-lg-4">
-                          Enjoy refreshing summer drink
-                        </h2>
-                        <a className="btn btn-lg btn-outline-light rounded-pill">
-                          Shop now
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <img
-                  src="assets/img/home/grocery/hero-slider/03.jpg"
-                  className="position-absolute top-0 start-0 w-100 h-100 object-fit-cover rtl-flip"
-                  alt="Summer Drink"
-                />
-              </div>
             </div>
 
             {/* Slider pagination (Bullets) */}
