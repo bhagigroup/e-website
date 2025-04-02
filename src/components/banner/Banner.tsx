@@ -40,17 +40,16 @@ const Banner: React.FC = () => {
     });
 
     const fetchCategories = async () => {
-          const data = await ProductServices.getBanners();
-          if (Array.isArray(data)) {
-            setBanners(data);
-          }
-        };
+      const data = await ProductServices.getBanners();
+      if (Array.isArray(data)) {
+        setBanners(data);
+      }
+    };
     fetchCategories();
-
   }, []);
 
   const handleCategoryClick = (categoryId: string) => {
-    alert("helloo...")
+    alert("helloo...");
     navigate("/productsfilter", { state: { categoryId } });
   };
 
@@ -62,36 +61,40 @@ const Banner: React.FC = () => {
             <div className="swiper-wrapper">
               {/* Slide 1 */}
               {banners.map((category) => (
-              <div
-                key={category.id}
-                className="swiper-slide"
-                style={{ backgroundColor: "#6dafca" }}
-              >
-                <div className="position-absolute d-flex align-items-center w-100 h-100 z-2">
-                  <div className="container mt-lg-n4">
-                    <div className="row">
-                      <div className="col-9 col-sm-8 col-md-7 col-lg-6">
-                        <p className="fs-sm text-white mb-lg-4">
-                          🔥 Free shipping - order over <strong>50$</strong>
-                        </p>
-                        <h2 className="display-4 pb-2 pb-md-3 pb-lg-4">
-                          Healthy Food Available to Everyone
-                        </h2>
-                        <a className="btn btn-lg btn-outline-light rounded-pill" onClick={() => handleCategoryClick(category.categoryId)}>
-                          Shop now
-                        </a>
+                <div
+                  key={category.id}
+                  className="swiper-slide"
+                  style={{ backgroundColor: "#6dafca" }}
+                >
+                  <div className="position-absolute d-flex align-items-center w-100 h-100 z-2">
+                    <div className="container mt-lg-n4">
+                      <div className="row">
+                        <div className="col-9 col-sm-8 col-md-7 col-lg-6">
+                          <p className="fs-sm text-white mb-lg-4">
+                            🔥 Free shipping - order over <strong>50$</strong>
+                          </p>
+                          <h2 className="display-4 pb-2 pb-md-3 pb-lg-4">
+                            Healthy Food Available to Everyone
+                          </h2>
+                          <a
+                            className="btn btn-lg btn-outline-light rounded-pill"
+                            onClick={() =>
+                              handleCategoryClick(category.categoryId)
+                            }
+                          >
+                            Shop now
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  <img
+                    src={category.image?.fileUrl}
+                    className="position-absolute top-0 start-0 w-100 h-100 object-fit-cover rtl-flip"
+                    alt="Healthy Food"
+                  />
                 </div>
-                <img
-                  src={category.image?.fileUrl}
-                  className="position-absolute top-0 start-0 w-100 h-100 object-fit-cover rtl-flip"
-                  alt="Healthy Food"
-                />
-              </div>
               ))}
-
             </div>
 
             {/* Slider pagination (Bullets) */}

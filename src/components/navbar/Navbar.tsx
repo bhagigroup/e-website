@@ -14,7 +14,7 @@ const Navbar: React.FC = () => {
     useState<boolean>(false);
 
   const themeDropdownRef = useRef<HTMLDivElement>(null);
-  const userId = "67b9c5f1e4b3771fff37bfdd";
+  const userId = "674b61875b09ec4b3c05bd68";
 
   // Handle cart click
   const handleCartClick = async () => {

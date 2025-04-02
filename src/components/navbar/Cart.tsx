@@ -1,111 +1,117 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import { Breadcrumbs } from "../common/Breadcrumbs";
-import axios from "axios";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-declare global {
-  interface Window {
-    Razorpay: any;
-  }
+interface CartItem {
+  productName: string;
+  productId: string;
+  image: {
+    fileUrl: string;
+  };
+  variant: {
+    mrp: number;
+    inventory: number;
+  };
+  variantId: string;
+  subTotal: number;
+  orderQuantity: number;
+}
+
+interface CartData {
+  itemList: CartItem[];
+  total: number;
 }
 
 const Cart: React.FC = () => {
   const navigate = useNavigate();
-
   const location = useLocation();
-  const initialCartData = location.state?.cartData || null;
-
-  const [cartItems, setCartItems] = useState<any[]>([]);
-  const [total, setTotal] = useState<number>(0);
-  const [orderQuantity, setOrderQuantity] = useState<number>(0);
-
-  //handle proceed to checkout
-  const handleProceedToAddDeliveryOptions = () => {
-    navigate("/delivery-options");
-  };
+  const [cartData, setCartData] = useState<CartData | undefined>(
+    location.state?.cartData as CartData | undefined
+  );
 
   useEffect(() => {
-    const updateCart = () => {
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      setCartItems(cart);
+    console.log("Cart Data:", cartData);
+  }, [cartData]);
 
-      const savedTotal = JSON.parse(localStorage.getItem("total") || "0");
-      const savedOrderQuantity = JSON.parse(
-        localStorage.getItem("orderQuantity") || "0"
+  const handleIncrement = (productId: string, variantId: string) => {
+    setCartData((prevCartData) => {
+      if (!prevCartData) return prevCartData;
+
+      const updatedItemList = prevCartData.itemList.map((item) => {
+        if (
+          item.productId === productId &&
+          item.variantId === variantId &&
+          item.orderQuantity < item.variant.inventory
+        ) {
+          return {
+            ...item,
+            orderQuantity: item.orderQuantity + 1,
+            subTotal: item.variant.mrp * (item.orderQuantity + 1),
+          };
+        }
+        return item;
+      });
+
+      const updatedTotal = updatedItemList.reduce(
+        (sum, item) => sum + item.subTotal,
+        0
       );
 
-      setTotal(savedTotal);
-      setOrderQuantity(savedOrderQuantity);
-    };
-    if (initialCartData) {
-      setCartItems(initialCartData.itemList || []);
-      setTotal(initialCartData.total || 0);
-      setOrderQuantity(
-        initialCartData.itemList?.reduce(
-          (acc: number, item: any) => acc + item.orderQuantity,
-          0
-        ) || 0
-      );
-    } else {
-      updateCart();
-    }
-
-    updateCart();
-    window.addEventListener("cartUpdated", updateCart);
-
-    return () => {
-      window.removeEventListener("cartUpdated", updateCart);
-    };
-  }, []);
-
-  // Handle Increment & Decrement of Quantity
-  const handleQuantityChange = (productId: string, delta: number) => {
-    let updatedCart = cartItems.map((item) => {
-      if (item.productId === productId) {
-        const newQuantity = item.orderQuantity + delta;
-        return newQuantity > 0 ? { ...item, orderQuantity: newQuantity } : item;
-      }
-      return item;
+      return {
+        ...prevCartData,
+        itemList: updatedItemList,
+        total: updatedTotal,
+      };
     });
-
-    // Remove item if quantity reaches 0
-    updatedCart = updatedCart.filter((item) => item.orderQuantity > 0);
-
-    // Recalculate total price and order quantity
-    const newTotal = updatedCart.reduce(
-      (acc, item) => acc + item.price * item.orderQuantity,
-      0
-    );
-    const newOrderQuantity = updatedCart.reduce(
-      (acc, item) => acc + item.orderQuantity,
-      0
-    );
-
-    // Update state
-    setCartItems(updatedCart);
-    setTotal(newTotal);
-    setOrderQuantity(newOrderQuantity);
-
-    // Save to localStorage
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    localStorage.setItem("total", JSON.stringify(newTotal));
-    localStorage.setItem("orderQuantity", JSON.stringify(newOrderQuantity));
-
-    // Dispatch event to notify other components (like Navbar)
-    window.dispatchEvent(new Event("cartUpdated"));
   };
 
+  const handleDecrement = (productId: string, variantId: string) => {
+    setCartData((prevCartData) => {
+      if (!prevCartData) return prevCartData;
+
+      const updatedItemList = prevCartData.itemList.map((item) => {
+        if (
+          item.productId === productId &&
+          item.variantId === variantId &&
+          item.orderQuantity >= 0
+        ) {
+          return {
+            ...item,
+            orderQuantity: Math.max(0, item.orderQuantity - 1), // Ensure quantity doesn't go below 0
+            subTotal: item.variant.mrp * Math.max(0, item.orderQuantity - 1),
+          };
+        }
+        return item;
+      });
+
+      const updatedTotal = updatedItemList.reduce(
+        (sum, item) => sum + item.subTotal,
+        0
+      );
+
+      return {
+        ...prevCartData,
+        itemList: updatedItemList,
+        total: updatedTotal,
+      };
+    });
+  };
+
+  const total = cartData?.total || 0;
+  const orderQuantity =
+    cartData?.itemList.reduce((sum, item) => sum + item.orderQuantity, 0) || 0;
+  //handle proceed to checkout
+  const handleProceedToAddDeliveryOptions = () => {
+    navigate("/delivery-options", { state: { cartData } });
+  };
   return (
     <>
       <Navbar />
       <section className="container pb-5 mb-2 mb-md-3 mb-lg-4 mb-xl-5">
         <Breadcrumbs item1="Home" item2="Shop" item3="Cart" />
         <h1 className="h3 mb-4">Shopping cart</h1>
-
         <div className="row">
-          {/* Items list */}
           <div className="col-lg-8">
             <div className="pe-lg-2 pe-xl-3 me-xl-3">
               <p className="fs-sm">
@@ -116,27 +122,17 @@ const Cart: React.FC = () => {
                 </span>
               </p>
               <div
-                className="progress w-100 overflow-visible mb-4"
-                role="progressbar"
-                aria-label="Free shipping progress"
-                aria-valuenow={75}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                style={{ height: "4px" }}
+                className="progress-bar bg-warning rounded-pill position-relative overflow-visible"
+                style={{ width: "75%", height: "4px" }}
               >
                 <div
-                  className="progress-bar bg-warning rounded-pill position-relative overflow-visible"
-                  style={{ width: "75%", height: "4px" }}
+                  className="position-absolute top-50 end-0 d-flex align-items-center justify-content-center translate-middle-y bg-body border border-warning rounded-circle me-n1"
+                  style={{ width: "1.5rem", height: "1.5rem" }}
                 >
-                  <div
-                    className="position-absolute top-50 end-0 d-flex align-items-center justify-content-center translate-middle-y bg-body border border-warning rounded-circle me-n1"
-                    style={{ width: "1.5rem", height: "1.5rem" }}
-                  >
-                    <i className="ci-star-filled text-warning"></i>
-                  </div>
+                  <i className="ci-star-filled text-warning"></i>
                 </div>
               </div>
-              <table className="table position-relative z-2 mb-4">
+              <table className="table position-relative z-2 mb-4 mt-3">
                 <thead>
                   <tr>
                     <th scope="col">Product</th>
@@ -153,74 +149,78 @@ const Cart: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="align-middle">
-                  {cartItems.map((item, index) => (
-                    <tr key={index}>
-                      <td className="py-3 ps-0">
-                        <div className="d-flex align-items-center">
-                          <img src={item.image} width="110" alt={item.name} />
-                          <div className="ps-2 ps-xl-3">
-                            <h5>{item.name}</h5>
+                  {cartData && cartData.itemList.length > 0 ? (
+                    cartData.itemList.map((item: CartItem) => (
+                      <tr key={item.productId + item.variantId}>
+                        <td className="py-3 ps-0">
+                          <div className="d-flex align-items-center">
+                            <img
+                              src={item.image.fileUrl}
+                              width="110"
+                              alt={item.productName}
+                            />
+                            <div className="ps-2 ps-xl-3">
+                              <h5>{item.productName}</h5>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="h6 py-3 d-none d-xl-table-cell">
-                        ₹{item.price.toFixed(2)}
-                      </td>
-                      <td className="py-3 d-none d-md-table-cell">
-                        <div className="count-input flex-shrink-0 rounded-pill d-flex align-items-center">
+                        </td>
+                        <td className="d-none d-xl-table-cell">
+                          ₹{item.variant.mrp}
+                        </td>
+                        <td className="py-3 d-none d-md-table-cell">
+                          <div className="count-input flex-shrink-0 rounded-pill d-flex align-items-center">
+                            <button
+                              type="button"
+                              className="btn btn-icon btn-lg"
+                              aria-label="Decrement quantity"
+                              onClick={() =>
+                                handleDecrement(item.productId, item.variantId)
+                              }
+                            >
+                              <i className="ci-minus"></i>
+                            </button>
+                            <input
+                              type="number"
+                              className="form-control form-control-lg text-center"
+                              value={item.orderQuantity}
+                              readOnly
+                            />
+                            <button
+                              type="button"
+                              className="btn btn-icon btn-lg"
+                              aria-label="Increment quantity"
+                              onClick={() =>
+                                handleIncrement(item.productId, item.variantId)
+                              }
+                            >
+                              <i className="ci-plus"></i>
+                            </button>
+                          </div>
+                        </td>
+                        <td className="d-none d-md-table-cell">
+                          ₹{item.subTotal}
+                        </td>
+                        <td className="text-end py-3 px-0">
                           <button
                             type="button"
-                            className="btn btn-icon btn-lg"
-                            onClick={() =>
-                              handleQuantityChange(item.productId, -1)
-                            }
-                            disabled={item.orderQuantity <= 1}
-                            aria-label="Decrement quantity"
-                          >
-                            <i className="ci-minus"></i>
-                          </button>
-                          <input
-                            type="number"
-                            className="form-control form-control-lg text-center"
-                            value={item.orderQuantity}
-                            readOnly
-                          />
-                          <button
-                            type="button"
-                            className="btn btn-icon btn-lg"
-                            onClick={() =>
-                              handleQuantityChange(item.productId, 1)
-                            }
-                            aria-label="Increment quantity"
-                          >
-                            <i className="ci-plus"></i>
-                          </button>
-                        </div>
-                      </td>
-                      <td className="h6 py-3 d-none d-md-table-cell">
-                        ₹{(item.price * item.orderQuantity).toFixed(2)}
-                      </td>
-                      <td className="text-end py-3 px-0">
-                        <button
-                          type="button"
-                          className="btn-close fs-sm"
-                          onClick={() =>
-                            handleQuantityChange(
-                              item.productId,
-                              -item.orderQuantity
-                            )
-                          }
-                          aria-label="Remove from cart"
-                        ></button>
+                            className="btn-close fs-sm"
+                            aria-label="Remove from cart"
+                          ></button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="text-center">
+                        Your cart is empty.
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
 
-          {/* Order summary (sticky sidebar) */}
           <aside className="col-lg-4">
             <div className="bg-body-tertiary rounded-5 p-4">
               <h5 className="border-bottom pb-4 mb-4">Order summary</h5>

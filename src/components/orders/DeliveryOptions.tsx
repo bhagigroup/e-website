@@ -5,6 +5,26 @@ import { useForm } from "react-hook-form";
 
 import Navbar from "../navbar/Navbar";
 
+interface CartItem {
+  productName: string;
+  productId: string;
+  image: {
+    fileUrl: string;
+  };
+  variant: {
+    mrp: number;
+    inventory: number;
+  };
+  variantId: string;
+  subTotal: number;
+  orderQuantity: number;
+}
+
+interface CartData {
+  itemList: CartItem[];
+  total: number;
+  id: string;
+}
 interface FormData {
   FirstName: string;
   LastName: string;
@@ -43,45 +63,18 @@ declare global {
 const DeliveryOptions: React.FC<SubmitFormProps> = ({ handleClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const initialCartData = location.state?.cartData || null;
+  const cartData = location.state?.cartData as CartData | undefined;
+
+  useEffect(() => {}, [cartData]);
 
   const [slots, setSlots] = useState<DeliverySlot[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [deliveryDate, setDeliveryDate] = useState<string | null>(null);
 
-  const [orderQuantity, setOrderQuantity] = useState<number>(0);
-  const [total, setTotal] = useState<number>(0);
-
-  useEffect(() => {
-    const updateCart = () => {
-      const savedTotal = JSON.parse(localStorage.getItem("total") || "0");
-      const savedOrderQuantity = JSON.parse(
-        localStorage.getItem("orderQuantity") || "0"
-      );
-
-      setTotal(savedTotal);
-      setOrderQuantity(savedOrderQuantity);
-    };
-    if (initialCartData) {
-      setTotal(initialCartData.total || 0);
-      setOrderQuantity(
-        initialCartData.itemList?.reduce(
-          (acc: number, item: any) => acc + item.orderQuantity,
-          0
-        ) || 0
-      );
-    } else {
-      updateCart();
-    }
-
-    updateCart();
-    window.addEventListener("cartUpdated", updateCart);
-
-    return () => {
-      window.removeEventListener("cartUpdated", updateCart);
-    };
-  }, []);
-
+  const orderQuantity =
+    cartData?.itemList.reduce((sum, item) => sum + item.orderQuantity, 0) || 0;
+  const total = cartData?.total || 0;
+  const cartId = cartData?.id || "";
   const {
     register,
     handleSubmit,
@@ -115,12 +108,6 @@ const DeliveryOptions: React.FC<SubmitFormProps> = ({ handleClose }) => {
 
   const handleProceedToCheckout = async () => {
     try {
-      const cartId = localStorage.getItem("cartId");
-      if (!cartId) {
-        console.warn("Cart ID not found in localStorage");
-        return;
-      }
-
       const {
         FirstName,
         LastName,
@@ -153,7 +140,7 @@ const DeliveryOptions: React.FC<SubmitFormProps> = ({ handleClose }) => {
           alert(
             "Payment Successful! Payment ID: " + response.razorpay_payment_id
           );
-          navigate("/account-orders");
+          // navigate("/account-orders");
         },
         theme: {
           color: "#3399cc",
@@ -165,7 +152,7 @@ const DeliveryOptions: React.FC<SubmitFormProps> = ({ handleClose }) => {
 
       const payload = {
         cartId: cartId,
-        userId: "67b9c5f1e4b3771fff37bfdd",
+        userId: "674b61875b09ec4b3c05bd68",
         address: {
           firstName: FirstName,
           lastName: LastName,
@@ -189,7 +176,7 @@ const DeliveryOptions: React.FC<SubmitFormProps> = ({ handleClose }) => {
       );
 
       if (response?.status === 200) {
-        navigate("/account-orders"); // navigation is handled in razorpay handler now.
+        navigate("/account-orders");
       }
     } catch (err: any) {
       console.log("Failed to place order", err?.message);

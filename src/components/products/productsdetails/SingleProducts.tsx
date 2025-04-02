@@ -13,7 +13,7 @@ export interface ProductDetailType {
   variants: {
     id: string;
     name: string;
-    discountedPrice: number;
+    mrp: number;
     attributes: { attributeName: string; attributeValue: string }[];
   }[];
   Name: string;
@@ -64,71 +64,22 @@ const SingleProducts: React.FC = () => {
   const handleAddToCart = async () => {
     if (!product || !selectedVariant) return;
 
-    const apiPayload = {
+    const payload = {
       productId: product.id,
       variantId: selectedVariant.id,
-      quantity: 1,
-      userId: "67b9c5f1e4b3771fff37bfdd",
+      quantity: "1",
+      userId: "674b61875b09ec4b3c05bd68",
       cartId: "",
     };
 
     try {
       const response = await axios.post(
         "http://49.207.5.51:7000/cms/api/v1/order/add-to-cart",
-        apiPayload,
-        { headers: { "Content-Type": "application/json" } }
+        payload
       );
-
-      if (response.status === 200) {
-        const cartData = response.data;
-        if (cartData.id) {
-          localStorage.setItem("cartId", cartData.id);
-        } else {
-          console.warn("Cart ID not found in response");
-        }
-
-        const item = response.data.itemList?.find(
-          (item: any) => item.productId === product.id
-        );
-
-        const productName = item?.productName || "Unknown Product";
-        const subTotal = item?.subTotal || selectedVariant.discountedPrice;
-        const orderQuantity = item?.orderQuantity || 1;
-        const totalFromResponse =
-          response.data.total || selectedVariant.discountedPrice;
-
-        // Get current cart from localStorage
-        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-        // Add new item to cart
-        cart.push({
-          productId: product.id,
-          variantId: selectedVariant.id,
-          name: productName,
-          subTotal: subTotal,
-          price: selectedVariant.discountedPrice,
-          orderQuantity: orderQuantity,
-          image:
-            product.attachments.length > 0
-              ? product.attachments[0].fileUrl
-              : "https://via.placeholder.com/150",
-        });
-
-        // Update total value
-        let existingTotal = JSON.parse(localStorage.getItem("total") || "0");
-        let updatedTotal = existingTotal + subTotal;
-
-        // Save updated cart and total
-        localStorage.setItem("cart", JSON.stringify(cart));
-        localStorage.setItem("total", JSON.stringify(updatedTotal));
-        localStorage.setItem("orderQuantity", JSON.stringify(orderQuantity));
-
-        // Notify Navbar to update cart count
-        window.dispatchEvent(new Event("cartUpdated"));
-        navigate("/cart");
-      }
+      navigate("/cart", { state: { cartData: response.data } });
     } catch (error) {
-      console.error("Error adding to cart:", error);
+      console.error("Error adding item to cart:", error);
     }
   };
 
@@ -152,7 +103,6 @@ const SingleProducts: React.FC = () => {
             </li>
           </ol>
         </nav>
-
         <section className="container pt-md-4 pb-5 mt-md-2 mt-lg-3 mb-2 mb-sm-3 mb-lg-4 mb-xl-5">
           <div className="row align-items-start">
             <div className="col-md-6 col-lg-7 sticky-md-top z-1 mb-4 mb-md-0">
@@ -165,17 +115,15 @@ const SingleProducts: React.FC = () => {
                         : "https://via.placeholder.com/150"
                     }
                     className="swiper-thumb-img"
-                    alt="Thumbnail"
+                    alt={product.Name}
                   />
                 </div>
               </div>
             </div>
-
             <div className="col-md-6 col-lg-5 position-relative">
               <div className="ps-xxl-3">
                 <p className="fs-sm text-body-secondary">{product.Name}</p>
                 <h1 className="h5 mb-2">{product.Description}</h1>
-
                 <div className="border rounded-pill px-4 py-2 my-4">
                   <div className="text-dark-emphasis fs-sm py-1">
                     We will deliver your goods as soon as possible
@@ -184,11 +132,9 @@ const SingleProducts: React.FC = () => {
                     </a>
                   </div>
                 </div>
-
                 <div className="h3">
-                  ₹{selectedVariant ? selectedVariant.discountedPrice : "N/A"}
+                  ₹{selectedVariant ? selectedVariant.mrp : "N/A"}
                 </div>
-
                 <div className="d-flex gap-3 mb-4">
                   <button
                     type="button"
@@ -198,7 +144,6 @@ const SingleProducts: React.FC = () => {
                     Add to cart
                   </button>
                 </div>
-
                 <p className="fs-sm mb-4">
                   Muesli Fitness Nutritious Energy is a popular breakfast cereal
                   that is a healthy and nutritious way to start your day. This
@@ -219,7 +164,6 @@ const SingleProducts: React.FC = () => {
                     Vegan
                   </div>
                 </div>
-                {/* Variant Selection */}
                 {product.variants.length > 0 && (
                   <div className="variants-box my-3">
                     <div
@@ -258,9 +202,7 @@ const SingleProducts: React.FC = () => {
                               <h6 className="mb-2">{variant.name}</h6>
                               <div className="mb-1">
                                 <strong>Price:</strong>
-                                <span className="ms-1">
-                                  ₹{variant.discountedPrice}
-                                </span>
+                                <span className="ms-1">₹{variant.mrp}</span>
                               </div>
                               <div
                                 style={{
