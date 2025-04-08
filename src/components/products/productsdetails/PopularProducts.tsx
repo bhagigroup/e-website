@@ -86,7 +86,7 @@ const PopularProducts: React.FC = () => {
                   className="btn btn-primary w-100 rounded-pill
                    px-3"
                 >
-                  View variants
+                  View Options
                 </button>
                 <button
                   type="button"

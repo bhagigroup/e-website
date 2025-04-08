@@ -24,12 +24,14 @@ export const ProductServices = {
     }
   },
 
-  //get products details home page
+  //get banner details home page
   getBanners: async () => {
     try {
       const response = await axios.get(`${BASE_URL}/product/get-banners`);
       return response.data;
     } catch (error) {
+      console.error("Error fetching banners:", error);
+
       return null;
     }
   },

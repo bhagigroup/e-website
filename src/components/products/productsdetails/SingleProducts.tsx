@@ -167,7 +167,7 @@ const SingleProducts: React.FC = () => {
                 {product.variants.length > 0 && (
                   <div className="variants-box my-3">
                     <div
-                      className="row d-flex flex-wrap gap-3"
+                      className="d-flex flex-wrap gap-3"
                       style={{ justifyContent: "flex-start" }}
                     >
                       {product.variants.map((variant) => {

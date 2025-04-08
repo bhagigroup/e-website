@@ -2,8 +2,14 @@ import React from "react";
 import CategoriesCatalog from "./CategoriesCatalog";
 import ProductsList from "./ProductsList";
 import Navbar from "../navbar/Navbar";
+import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 const Categories: React.FC = () => {
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const categoryId = searchParams.get("categoryId");
+
   return (
     <>
       <Navbar />

@@ -77,7 +77,7 @@ const Banner: React.FC = () => {
                             Healthy Food Available to Everyone
                           </h2>
                           <a
-                            className="btn btn-lg btn-outline-light rounded-pill"
+                            className="btn btn-lg btn-primary rounded-pill"
                             onClick={() =>
                               handleCategoryClick(category.categoryId)
                             }

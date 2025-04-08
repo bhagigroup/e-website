@@ -127,7 +127,7 @@ const ProductsList: React.FC = () => {
                     </a>
                   </div>
                   <div className="card-body pt-0 px-1 px-md-2 px-lg-3 pb-2">
-                    <div className="h6 mb-2">₹{product.price}</div>
+                    <div className="h6 mb-2">Starts from ₹ {product.price}</div>
                     <h3 className="fs-sm lh-base mb-0">
                       <a
                         className="hover-effect-underline fw-normal d-block fs-sm fw-medium text-truncate"
@@ -144,7 +144,7 @@ const ProductsList: React.FC = () => {
                    px-3"
                       onClick={() => handleProductClick(product.id)}
                     >
-                      View variants
+                      View OPtions
                     </button>
                     <button
                       type="button"

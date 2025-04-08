@@ -76,11 +76,15 @@ const NavbarCategoryDropdown: React.FC<NavbarCategoryDropdownProps> = ({
     chunkedCategories.push(categories.slice(i, i + 4));
   }
 
+  const handleCategoriesMouseEnter = (): void => {
+    handleCategoriesDropdownToggle();
+  };
   return (
     <div
       className="dropdown d-none d-lg-block w-100 me-4"
       style={{ maxWidth: "200px" }}
       ref={dropdownRef}
+      onMouseEnter={handleCategoriesMouseEnter}
     >
       <button
         type="button"
